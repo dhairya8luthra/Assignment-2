@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Forecasting Tool</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary-gradient: linear-gradient(135deg, #6366f1 0%, #2563eb 100%);
+        --success-gradient: linear-gradient(135deg, #059669 0%, #16a34a 100%);
+        --danger-gradient: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        --background-gradient: linear-gradient(
+          135deg,
+          #f8fafc 0%,
+          #e2e8f0 100%
+        );
+        --card-gradient: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+
+        --primary-color: #2563eb;
+        --primary-hover: #1d4ed8;
+        --danger-color: #dc2626;
+        --danger-hover: #b91c1c;
+        --success-color: #16a34a;
+        --success-hover: #15803d;
+        --background: #f8fafc;
+        --card-background: #ffffff;
+        --text-primary: #1e293b;
+        --text-secondary: #64748b;
+        --border-color: #e2e8f0;
+        --input-background: #f8fafc;
+        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1),
+          0 2px 4px -2px rgb(0 0 0 / 0.1);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+          0 4px 6px -4px rgb(0 0 0 / 0.1);
+        --glass-background: rgba(255, 255, 255, 0.7);
+        --glass-border: rgba(255, 255, 255, 0.3);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+          Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        background: var(--background-gradient);
+        color: var(--text-primary);
+        line-height: 1.5;
+        padding: 2rem;
+        min-height: 100vh;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        text-align: center;
+        color: var(--text-primary);
+        background: var(--primary-gradient);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      h2 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        color: var(--text-primary);
+      }
+
+      .card {
+        background: var(--glass-background);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--glass-border);
+        border-radius: 1rem;
+        box-shadow: var(--shadow);
+        padding: 2rem;
+        margin-bottom: 2rem;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      .card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .data-table {
+        overflow-x: auto;
+        border-radius: 0.5rem;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin: 1.5rem 0;
+      }
+
+      th,
+      td {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      th {
+        background-color: rgba(255, 255, 255, 0.5);
+        font-weight: 600;
+        color: var(--text-primary);
+        position: sticky;
+        top: 0;
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+      }
+
+      tr:hover {
+        background-color: rgba(255, 255, 255, 0.3);
+      }
+
+      input {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: 0.5rem;
+        background-color: rgba(255, 255, 255, 0.5);
+        color: var(--text-primary);
+        font-size: 1rem;
+        transition: all 0.2s ease;
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+      }
+
+      input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        background-color: rgba(255, 255, 255, 0.8);
+      }
+
+      input:hover {
+        border-color: var(--primary-color);
+        background-color: rgba(255, 255, 255, 0.7);
+      }
+
+      button {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 1rem;
+      }
+
+      .primary-button {
+        background: var(--primary-gradient);
+        color: white;
+        box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+      }
+
+      .primary-button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);
+      }
+
+      .delete-btn {
+        background: var(--danger-gradient);
+        color: white;
+        padding: 0.5rem 1rem;
+        box-shadow: 0 2px 4px rgba(220, 38, 38, 0.2);
+      }
+
+      .delete-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px rgba(220, 38, 38, 0.3);
+      }
+
+      .add-btn {
+        background: var(--success-gradient);
+        color: white;
+        width: 100%;
+        margin-top: 1rem;
+        box-shadow: 0 2px 4px rgba(22, 163, 74, 0.2);
+      }
+
+      .add-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 6px rgba(22, 163, 74, 0.3);
+      }
+
+      form {
+        display: grid;
+        gap: 1.5rem;
+        margin: 2rem 0;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      label {
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+
+      .results {
+        display: grid;
+        gap: 1rem;
+        text-align: left;
+      }
+
+      .result-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        background: rgba(255, 255, 255, 0.5);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border-radius: 0.5rem;
+        border: 1px solid var(--glass-border);
+        transition: all 0.2s ease;
+      }
+
+      .result-item:hover {
+        background: rgba(255, 255, 255, 0.7);
+        transform: translateX(2px);
+      }
+
+      .result-label {
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+
+      .result-value {
+        font-family: monospace;
+        font-size: 1.1rem;
+        background: var(--primary-gradient);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        font-weight: 600;
+      }
+
+      @media (max-width: 768px) {
+        body {
+          padding: 1rem;
+        }
+
+        .card {
+          padding: 1rem;
+        }
+
+        th,
+        td {
+          padding: 0.75rem;
+        }
+
+        h1 {
+          font-size: 2rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Forecasting Tool</h1>
+
+      <div class="card">
+        <h2>Monthly Data</h2>
+        <div class="data-table">
+          <table id="dataTable">
+            <thead>
+              <tr>
+                <th>Month</th>
+                <th>Original MADT</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+          <button id="addRow" class="add-btn">+ Add New Month</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Forecast Parameters</h2>
+        <form id="forecastForm">
+          <div class="form-group">
+            <label for="window">Moving Average Window:</label>
+            <input
+              type="number"
+              id="window"
+              name="window"
+              value="3"
+              min="1"
+              title="Number of months to include in the moving average calculation"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="alpha">Exponential Smoothing Alpha:</label>
+            <input
+              type="number"
+              id="alpha"
+              name="alpha"
+              step="0.01"
+              value="0.2"
+              min="0"
+              max="1"
+              title="Smoothing factor between 0 and 1"
+            />
+          </div>
+
+          <button type="submit" class="primary-button">
+            Calculate Forecast
+          </button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h2>Forecast Results</h2>
+        <div class="results">
+          <div class="result-item">
+            <span class="result-label">Moving Average Forecast:</span>
+            <span id="movingAvg" class="result-value">-</span>
+          </div>
+          <div class="result-item">
+            <span class="result-label">Exponential Smoothing Forecast:</span>
+            <span id="expSmooth" class="result-value">-</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let defaultData = [
+        { Month: "Month-1", "Original MADT": 852 },
+        { Month: "Month-2", "Original MADT": 861 },
+        { Month: "Month-3", "Original MADT": 958 },
+        { Month: "Month-4", "Original MADT": 1037 },
+        { Month: "Month-5", "Original MADT": 1045 },
+        { Month: "Month-6", "Original MADT": 1109 },
+        { Month: "Month-7", "Original MADT": 1117 },
+        { Month: "Month-8", "Original MADT": 1134 },
+        { Month: "Month-9", "Original MADT": 1236 },
+        { Month: "Month-10", "Original MADT": 1077 },
+        { Month: "Month-11", "Original MADT": 868 },
+        { Month: "Month-12", "Original MADT": 997 },
+        { Month: "Month-13", "Original MADT": 962 },
+        { Month: "Month-14", "Original MADT": 907 },
+        { Month: "Month-15", "Original MADT": 1098 },
+        { Month: "Month-16", "Original MADT": 1167 },
+        { Month: "Month-17", "Original MADT": 1232 },
+        { Month: "Month-18", "Original MADT": 1277 },
+        { Month: "Month-19", "Original MADT": 1349 },
+      ];
+
+      function renderTable() {
+        const tableBody = document.getElementById("tableBody");
+        tableBody.innerHTML = "";
+
+        defaultData.forEach((row, index) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>
+              <input 
+                type="text" 
+                value="${row.Month}"
+                onchange="updateData(${index}, 'Month', this.value)"
+                title="Month name"
+              />
+            </td>
+            <td>
+              <input 
+                type="number" 
+                value="${row["Original MADT"]}"
+                onchange="updateData(${index}, 'Original MADT', Number(this.value))"
+                title="Monthly Average Daily Traffic"
+              />
+            </td>
+            <td>
+              <button 
+                onclick="deleteRow(${index})" 
+                class="delete-btn"
+                title="Delete this row"
+              >Delete</button>
+            </td>
+          `;
+          tableBody.appendChild(tr);
+        });
+      }
+
+      function updateData(index, field, value) {
+        defaultData[index][field] = value;
+      }
+
+      function deleteRow(index) {
+        defaultData.splice(index, 1);
+        renderTable();
+      }
+
+      document.getElementById("addRow").addEventListener("click", () => {
+        const newMonth = `Month-${defaultData.length + 1}`;
+        defaultData.push({
+          Month: newMonth,
+          "Original MADT": 0,
+        });
+        renderTable();
+      });
+
+      document
+        .getElementById("forecastForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+          const window = document.getElementById("window").value;
+          const alpha = document.getElementById("alpha").value;
+
+          // Show loading state
+          document.getElementById("movingAvg").textContent = "Calculating...";
+          document.getElementById("expSmooth").textContent = "Calculating...";
+
+          fetch("/forecast", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              window: window,
+              alpha: alpha,
+              data: defaultData,
+            }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              document.getElementById("movingAvg").textContent =
+                data.moving_avg_forecast?.toFixed(2) || "N/A";
+              document.getElementById("expSmooth").textContent =
+                data.exp_smooth_forecast?.toFixed(2) || "N/A";
+            })
+            .catch((error) => {
+              document.getElementById("movingAvg").textContent = "Error";
+              document.getElementById("expSmooth").textContent = "Error";
+              console.error("Error:", error);
+            });
+        });
+
+      // Initial render
+      renderTable();
+    </script>
+  </body>
+</html>
